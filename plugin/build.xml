@@ -6,10 +6,18 @@
 	<!-- Use this task to let ant copy the compiled jar files to the target folders for development  -->
 	<target name="devbuild">
 		<exec executable="mvn">
+			<arg value="-DskipTests=true"/>
 			<arg value="package"/>
 		</exec>
 		<copy file="module-main/target/plugin_intranda_workflow_${name}.jar" todir="/opt/digiverso/goobi/plugins/workflow/" overwrite="true"/>
 		<copy file="module-gui/target/plugin_intranda_workflow_${name}-GUI.jar" todir="/opt/digiverso/goobi/plugins/GUI/" overwrite="true"/>
+		<exec executable="curl">
+			<arg value="-X"/>
+			<arg value="PUT"/>
+			<arg value="http://localhost:8080/goobi/plugins/reload"/>
+			<arg value="-H"/>
+			<arg value="token: geheim"/>
+		</exec>
 	</target>
 
 </project>
