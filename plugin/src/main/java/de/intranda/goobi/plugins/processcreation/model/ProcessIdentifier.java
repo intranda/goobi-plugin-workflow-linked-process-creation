@@ -10,11 +10,13 @@ import lombok.Data;
 public class ProcessIdentifier {
     private String id;
     private String templateName;
+    private String logicalDSType;
 
     public static ProcessIdentifier fromConfig(HierarchicalConfiguration conf) {
         String id = conf.getString("./@id");
         String template = conf.getString("./@template");
+        String logicalDSType = conf.getString("./@logicalDSType");
 
-        return new ProcessIdentifier(id, template);
+        return new ProcessIdentifier(id, template, logicalDSType);
     }
 }

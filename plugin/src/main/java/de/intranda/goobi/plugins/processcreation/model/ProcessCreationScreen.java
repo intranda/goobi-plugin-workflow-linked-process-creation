@@ -13,6 +13,7 @@ import lombok.Data;
 public class ProcessCreationScreen {
     private String name;
     private List<ProcessIdentifier> processes;
+    private List<ProcessRelation> relations;
     private List<Column> columns;
 
     public static ProcessCreationScreen fromConfig(HierarchicalConfiguration conf) {
@@ -21,10 +22,14 @@ public class ProcessCreationScreen {
                 .stream()
                 .map(node -> ProcessIdentifier.fromConfig(node))
                 .collect(Collectors.toList());
+        List<ProcessRelation> relations = conf.configurationsAt("./relation")
+                .stream()
+                .map(node -> ProcessRelation.fromConfig(node))
+                .collect(Collectors.toList());
         List<Column> columns = conf.configurationsAt("./column")
                 .stream()
                 .map(node -> Column.fromConfig(node))
                 .collect(Collectors.toList());
-        return new ProcessCreationScreen(name, processes, columns);
+        return new ProcessCreationScreen(name, processes, relations, columns);
     }
 }

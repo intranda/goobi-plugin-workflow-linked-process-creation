@@ -22,6 +22,7 @@ public class Field {
     private boolean show;
     private boolean repeatable;
     private boolean multiVocabulary;
+    private boolean processTitle;
     private String processID;
 
     public static Field fromConfig(HierarchicalConfiguration conf) {
@@ -34,12 +35,14 @@ public class Field {
                 .map(GroupMapping::fromConfig)
                 .collect(Collectors.toList());
         String metadatatype = conf.getString("./metadatatype");
+        boolean processTitle = conf.getBoolean("./processTitle", false);
 
         String name = conf.getString("./name");
         String processID = conf.getString("./processId");
         List<FieldValue> values = new ArrayList<FieldValue>();
         List<String> sourceVocabulary = Arrays.asList(conf.getStringArray("./sourceVocabulary"));
 
-        return new Field(type, metadatatype, groupMappings, name, values, sourceVocabulary, show, repeatable, multiVocabulary, processID);
+        return new Field(type, metadatatype, groupMappings, name, values, sourceVocabulary, show, repeatable, multiVocabulary, processTitle,
+                processID);
     }
 }

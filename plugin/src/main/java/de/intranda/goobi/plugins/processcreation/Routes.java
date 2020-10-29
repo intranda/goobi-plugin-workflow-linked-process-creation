@@ -11,6 +11,7 @@ public class Routes {
         http.path("/processcreation", () -> {
             http.get("/vocabularies", Handlers.allVocabs, gson::toJson);
             http.get("/allCreationScreens", Handlers.allCreationScreens, gson::toJson);
+            http.post("/processes", Handlers.createProcesses, gson::toJson);
         });
 
     }

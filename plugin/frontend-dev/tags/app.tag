@@ -8,12 +8,19 @@
         <div class="col-md-12">
             <hr></hr>
         </div>
-		<div class="col-md-2">
-            <select class="form-control" onchange={changeCurrentScreen}>
-                <option each={s in state.screens}>{s.name}</option>
-            </select>
+		<div class="col-md-3">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-sm-4 control-label" for="templateSelect">Vorlage auswählen:</label>
+                    <div class="col-sm-8">
+                        <select class="form-control" onchange={changeCurrentScreen} id="templateSelect">
+                            <option each={s in state.screens}>{s.name}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
 		</div>
-		<div class="col-md-10">
+		<div class="col-md-9">
 			<div class="pull-right">
 				<button class="btn" onclick={save}>{msg('cancel')}</button>
 				<button class="btn btn-success" style="margin-left: 15px;" onclick={saveAndExit}><i class="fa-btn fa fa-floppy-o"></i>{msg('create_process')}</button>
@@ -25,6 +32,9 @@
 	 .btn .fa-btn {
 	 	margin-right: 5px;
 	 }
+     .inline-label {
+        display: inline;
+     }
 	</style>
   
   <script>
@@ -41,7 +51,7 @@
       this.state = {
     	  msgs: {},
           vocabularies: {},
-          currentScreen: 0,
+          currentScreen: {},
           screens: []
       };
       fetch(`/goobi/plugins/processcreation/allCreationScreens`).then(resp => {
@@ -90,18 +100,10 @@
     	}
     	this.update();
     },
-    save() {
-    	fetch(`/goobi/plugins/ce/process/${this.props.goobi_opts.processId}/mets`, {
-    		method: "POST",
-    		body: JSON.stringify(this.state.boxes)
-    	}).catch(err => {
-    		alert("There was an error saving your data");
-    	})
-    },
     saveAndExit() {
-    	fetch(`/goobi/plugins/ce/process/${this.props.goobi_opts.processId}/mets`, {
+    	fetch(`/goobi/plugins/processcreation/processes`, {
     		method: "POST",
-    		body: JSON.stringify(this.state.boxes)
+    		body: JSON.stringify(this.state.currentScreen)
     	}).then( r => {
     		this.leavePlugin();
     	}).catch(err => {
@@ -145,7 +147,7 @@
     	this.update();
     },
     leavePlugin() {
-    	document.querySelector('#restPluginFinishLink').click();
+    	//document.querySelector('#restPluginFinishLink').click();
     }
   }
   </script>
