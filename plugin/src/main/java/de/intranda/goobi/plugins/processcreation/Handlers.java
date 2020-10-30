@@ -1,7 +1,7 @@
 package de.intranda.goobi.plugins.processcreation;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,6 +23,7 @@ import de.intranda.goobi.plugins.processcreation.model.FieldValue;
 import de.intranda.goobi.plugins.processcreation.model.GroupMapping;
 import de.intranda.goobi.plugins.processcreation.model.ProcessCreationScreen;
 import de.intranda.goobi.plugins.processcreation.model.ProcessIdentifier;
+import de.intranda.goobi.plugins.processcreation.model.ProcessRelation;
 import de.sub.goobi.config.ConfigPlugins;
 import de.sub.goobi.helper.BeanHelper;
 import de.sub.goobi.helper.exceptions.DAOException;
@@ -39,6 +40,7 @@ import ugh.dl.MetadataType;
 import ugh.dl.Prefs;
 import ugh.exceptions.MetadataTypeNotAllowedException;
 import ugh.exceptions.PreferencesException;
+import ugh.exceptions.ReadException;
 import ugh.exceptions.TypeNotAllowedForParentException;
 import ugh.exceptions.WriteException;
 import ugh.fileformats.mets.MetsMods;
@@ -81,20 +83,24 @@ public class Handlers {
                 .stream()
                 .map(node -> ProcessCreationScreen.fromConfig(node))
                 .collect(Collectors.toList());
+        System.out.println(screens);
         return screens;
     };
 
     public static Route createProcesses = (req, res) -> {
         ProcessCreationScreen screen = gson.fromJson(req.body(), ProcessCreationScreen.class);
-        List<Process> createdProcesses = new ArrayList<>();
+        Map<String, Process> createdProcesses = new HashMap<>();
         for (ProcessIdentifier processId : screen.getProcesses()) {
             try {
-                createdProcesses.add(createProcess(processId, screen.getColumns()));
+                createdProcesses.put(processId.getId(), createProcess(processId, screen.getColumns()));
             } catch (Exception e) {
                 log.error(e);
                 res.body(e.getMessage());
                 res.status(500);
             }
+        }
+        for (ProcessRelation relation : screen.getRelations()) {
+            connectProcesses(createdProcesses, relation);
         }
         return "";
     };
@@ -107,6 +113,41 @@ public class Handlers {
                 .collect(Collectors.toList());
 
         return colList;
+    }
+
+    private static void connectProcesses(Map<String, Process> createdProcesses, ProcessRelation relation) throws PreferencesException, ReadException,
+            WriteException, IOException, InterruptedException, SwapException, DAOException, MetadataTypeNotAllowedException {
+        Process sourceProcess = createdProcesses.get(relation.getSourceProcessID());
+        DocStruct sourceDocStruct = readDocStruct(sourceProcess);
+        Optional<Metadata> sourceMd = sourceDocStruct.getAllMetadata()
+                .stream()
+                .filter(md -> md.getType().getName().equals(relation.getSourceMetadataType()))
+                .findAny();
+        if (!sourceMd.isPresent()) {
+            throw new MetadataTypeNotAllowedException("Could not find source metadata");
+        }
+        Process targetProcess = createdProcesses.get(relation.getTargetProcessID());
+        writeMetadataToTarget(relation, sourceMd, targetProcess);
+    }
+
+    private static void writeMetadataToTarget(ProcessRelation relation, Optional<Metadata> sourceMd, Process targetProcess) throws ReadException,
+            IOException, InterruptedException, PreferencesException, SwapException, DAOException, WriteException, MetadataTypeNotAllowedException {
+        Fileformat ff = targetProcess.readMetadataFile();
+        DigitalDocument dd = ff.getDigitalDocument();
+        DocStruct targetDocStruct = dd.getLogicalDocStruct();
+        Prefs targetPrefs = targetProcess.getRegelsatz().getPreferences();
+        MetadataType targetType = targetPrefs.getMetadataTypeByName(relation.getTargetMetadataType());
+        Metadata targetMd = new Metadata(targetType);
+        targetMd.setValue(sourceMd.get().getValue());
+        targetDocStruct.addMetadata(targetMd);
+        targetProcess.writeMetadataFile(ff);
+    }
+
+    private static DocStruct readDocStruct(Process process)
+            throws PreferencesException, ReadException, WriteException, IOException, InterruptedException, SwapException, DAOException {
+        Fileformat ff = process.readMetadataFile();
+        DigitalDocument dd = ff.getDigitalDocument();
+        return dd.getLogicalDocStruct();
     }
 
     private static Process createProcess(ProcessIdentifier processIdentifier, List<Column> columns)

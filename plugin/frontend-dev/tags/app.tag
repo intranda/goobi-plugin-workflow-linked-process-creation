@@ -105,7 +105,17 @@
     		method: "POST",
     		body: JSON.stringify(this.state.currentScreen)
     	}).then( r => {
-    		this.leavePlugin();
+  			alert("Prozesse erzeugt!")
+    		fetch(`/goobi/plugins/processcreation/allCreationScreens`).then(resp => {
+    	  		resp.json().then(json => {
+    	  			this.state.screens = json;
+    	  			console.log(this.state.screens)
+    	  			this.state.currentScreen = {};
+    	  			this.update();
+    	  			this.state.currentScreen = this.state.screens[0];
+    				this.update();
+    	  		});
+    	      });
     	}).catch(err => {
     		alert("There was an error saving your data");
     	})

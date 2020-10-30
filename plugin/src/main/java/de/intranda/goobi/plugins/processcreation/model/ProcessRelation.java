@@ -10,13 +10,15 @@ import lombok.Data;
 public class ProcessRelation {
     private String sourceProcessID;
     private String targetProcessID;
-    private String type;
+    private String sourceMetadataType;
+    private String targetMetadataType;
 
     public static ProcessRelation fromConfig(HierarchicalConfiguration conf) {
-        String sourceProcessID = conf.getString("./@sourceProcessID");
-        String targetProcessID = conf.getString("./@targetProcessID");
-        String type = conf.getString("./@type");
+        String sourceProcessID = conf.getString("./@sourceProcessId");
+        String targetProcessID = conf.getString("./@targetProcessId");
+        String sourceMetadataType = conf.getString("./@sourceMetadataType");
+        String targetMetadataType = conf.getString("./@targetMetadataType");
 
-        return new ProcessRelation(sourceProcessID, targetProcessID, type);
+        return new ProcessRelation(sourceProcessID, targetProcessID, sourceMetadataType, targetMetadataType);
     }
 }
