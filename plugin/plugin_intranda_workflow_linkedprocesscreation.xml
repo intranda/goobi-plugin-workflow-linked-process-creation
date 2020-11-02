@@ -61,6 +61,7 @@
 				<field type="INPUT" defaultDisplay="true">
 					<metadatatype>title</metadatatype>
 					<name>Objektbezeichnung</name>
+                    <processTitle>true</processTitle>
 					<processId>1</processId>
 				</field>
 				<!-- Einfaches Dropdown: Objekttyp -->
@@ -118,6 +119,7 @@
 				<field type="INPUT" defaultDisplay="true">
 					<metadatatype>title</metadatatype>
 					<name>Titel</name>
+                    <processTitle>true</processTitle>
 					<processId>2</processId>
 				</field>
 				<!-- Input Feld: Gesamttitel -->
