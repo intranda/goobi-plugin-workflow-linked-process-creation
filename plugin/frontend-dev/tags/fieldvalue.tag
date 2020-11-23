@@ -36,6 +36,7 @@
     			<span class="badge" each={value in props.field.values}>{value.value}</span>
     		</div>
     	</div>
+        <input type="text" class="form-control" if={props.field.type == 'UUID'} value={props.field.values[0].value} disabled={true}></input>
 	</template>
 	
 	<style>
@@ -163,6 +164,11 @@
 		                break;
 		            case "MULTISELECT":
 		                break;
+		            case "UUID":
+		            	if(field.values.length == 0) {
+		                	field.values[0] = {value: this.uuidv4()};
+		            	}
+		            	break;
 		        }
 		        this.closeHandler = document.addEventListener('click', (e) => this.closeMulti(e))
 		    },
@@ -240,7 +246,14 @@
 		    	return values.length != 0 
 		    		&& typeof values[0].value == "string" 
 		    		&& values[0].value.toLowerCase() == "true"
-		    }
+		    },
+		    //taken from https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid
+		    uuidv4() {
+	    	  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+	    	    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+	    	    return v.toString(16);
+	    	  });
+	    	}
 		}
 	</script>
 </fieldvalue>
