@@ -83,7 +83,6 @@ public class Handlers {
                 .stream()
                 .map(node -> ProcessCreationScreen.fromConfig(node))
                 .collect(Collectors.toList());
-        System.out.println(screens);
         return screens;
     };
 
