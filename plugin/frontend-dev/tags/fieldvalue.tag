@@ -149,12 +149,18 @@
 		                break;
 		            case "INPUT":
 		            case "TEXTAREA":
+		            	if(field.copy) {
+		            		console.log("copy", field)
+		            	}
 		            	if(field.values.length == 0) {
 		                	field.values[0] = {value: ""};
 		            	}
 		            	var textarea = this.$('#' + this.convertToSlug(this.props.field.name) + '_textarea')
 		            	if(textarea) {
 		            		this.setTextAreaHeight(textarea)
+		            	}
+		            	if(field.copy) {
+		            		console.log(field)
 		            	}
 		                break;
 		            case "DROPDOWN":

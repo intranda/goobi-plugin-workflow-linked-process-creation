@@ -48,11 +48,13 @@
       Imagemodal
     },
     onBeforeMount(props, state) {
+    	console.log(props)
       this.state = {
     	  msgs: {},
           vocabularies: {},
           currentScreen: {},
-          screens: []
+          screens: [],
+          pluginName: props.plugin_name
       };
       fetch(`/goobi/plugins/processcreation/allCreationScreens`).then(resp => {
   		resp.json().then(json => {
@@ -84,6 +86,7 @@
     onBeforeUpdate(props, state) {
     },
     onUpdated(props, state) {
+    	this.updateTitleAndBreadcrumb();
     },
     printState() {
     },
@@ -94,6 +97,7 @@
     		if(e.target.options[i].selected) {
     			this.state.currentScreen = {...this.state.screens[i]};
     			console.log(this.state.currentScreen)
+    			this.updateTitleAndBreadcrumb()
     			this.update();
     			break;
     		}
@@ -119,6 +123,13 @@
     	}).catch(err => {
     		alert("There was an error saving your data");
     	})
+    },
+    updateTitleAndBreadcrumb() {
+    	let title = this.msg(this.state.pluginName) + ": " + this.state.currentScreen.name;
+    	let titleNode = document.querySelector(".page-header h1");
+    	titleNode.innerText = title;
+    	let breadcrumbNode = document.querySelector("#breadcrumb\\:admin\\:link span");
+    	breadcrumbNode.innerText = title;
     },
     msg(str) {
       if(Object.keys(this.state.msgs).length == 0) {

@@ -149,12 +149,25 @@
 	        	this.state.showProvenanceModal = true;
 	        	this.state.provenanceField = field;
 	        }
+	        if(field.repeatable && field.show) {
+	        	console.log(field)
+	        	let copy = JSON.parse(JSON.stringify(field));
+	        	copy.copy = true;
+	        	// TODO: fix this.
+	        	//this.props.box.fields.push(copy);
+	        }
 	        this.filterFields();
 	        this.update();
 	    },
 	    emptyField(field) {
 	        field.show = false;
 	        field.values = [];
+	        if(field.copy) {
+	        	//this is just a copy. Needs to be deleted. 
+	        	console.log(field)
+	        	let idx = this.props.box.fields.findIndex(listField => listField.values[0].value == field.values[0].value && listField.copy)
+	        	this.props.box.splice(idx, 1);
+	        }
 	        this.filterFields();
 	    },
 	    filter(e) {
@@ -162,7 +175,7 @@
 	        this.filterFields();
 	    },
 	    emptyFilter() {
-	    	this.state.filteredFields = this.props.box.fields.filter(field => !field.show || field.repeatable);
+	    	this.state.filteredFields = this.props.box.fields.filter(field => !field.show || field.repeatable && !field.copy);
 	    },
 	    filterFields() {
 	    	if(this.state.search == '') {
