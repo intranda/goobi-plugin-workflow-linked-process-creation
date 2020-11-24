@@ -1,7 +1,13 @@
 <fieldvalue>
     <span class="text-danger error" if={state.vocabError}>{state.vocabError}</template>
     <template if={!state.vocabError && fieldPrepared()}>
-    	<input type="text" class="form-control" onkeyup={changeValue} if={props.field.type == 'INPUT'} value={props.field.values[0].value}></input>
+    	<input 
+            type="text" 
+            class="form-control" 
+            each={(value, idx) in props.field.values}
+            onkeyup={e => changeValue(e, idx)} 
+            if={props.field.type == 'INPUT'} 
+            value={props.field.values[idx].value}></input>
     	<textarea id="{convertToSlug(props.field.name) + '_textarea'}" class="form-control" onkeyup={changeValue} if={props.field.type == 'TEXTAREA'} >{props.field.values[0].value}</textarea>
     	<input type="checkbox" onchange={changeValue} checked={checkBoxChecked(props.field.values)} if={props.field.type == 'BOOLEAN'}></input>
     	<label class="select" if={props.field.type == 'DROPDOWN'}>
@@ -105,6 +111,9 @@
         textarea {
             resize: vertical;
         }
+        input[type="text"]:not(:first-child) {
+            margin-top: 5px;
+        }
 	</style>
 	<script>
 		export default {
@@ -207,14 +216,14 @@
 		      	}
 		      	this.update();
 		    },
-		    changeValue(e) {
+		    changeValue(e, valueIndex) {
 		        var field = this.props.field;
 		        switch(field.type) {
 		            case "BOOLEAN":
 		                field.values[0].value = e.target.checked
 		                break;
 		            case "INPUT":
-		                field.values[0].value = e.target.value;
+		                field.values[valueIndex].value = e.target.value;
 		                break;
 		            case "TEXTAREA":
 		                field.values[0].value = e.target.value;

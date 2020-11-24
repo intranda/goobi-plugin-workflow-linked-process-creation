@@ -23,9 +23,17 @@
 						{field.name}
 					</div>
 					<div class="action">
-						<a onclick={ () => emptyField(field)}>
+						<a onclick={ () => emptyField(field)} if={!field.repeatable}>
 							<i class="fa fa-minus-circle"></i>
 						</a>
+                        <a 
+                            class="repeatable-delete" 
+                            if={field.repeatable}
+                            each={(value, idx) in field.values}
+                            
+                            onclick={ () => deleteRepeatable(field, idx)}>
+                            <i class="fa fa-minus-circle"></i>
+                        </a>
 					</div>
 				</div>
 				<div class="value">
@@ -113,6 +121,10 @@
 		.right-addon .fa { 
 			right: 0px;
 		}
+        .action .repeatable-delete:not(:first-child) {
+            display: block;
+            margin-top: 5px;
+        }
 	</style>
 
 	<script>
@@ -151,10 +163,7 @@
 	        }
 	        if(field.repeatable && field.show) {
 	        	console.log(field)
-	        	let copy = JSON.parse(JSON.stringify(field));
-	        	copy.copy = true;
-	        	// TODO: fix this.
-	        	//this.props.box.fields.push(copy);
+				field.values.push({value: "", id: field.values.length})
 	        }
 	        this.filterFields();
 	        this.update();
@@ -162,13 +171,20 @@
 	    emptyField(field) {
 	        field.show = false;
 	        field.values = [];
-	        if(field.copy) {
-	        	//this is just a copy. Needs to be deleted. 
-	        	console.log(field)
-	        	let idx = this.props.box.fields.findIndex(listField => listField.values[0].value == field.values[0].value && listField.copy)
-	        	this.props.box.splice(idx, 1);
-	        }
 	        this.filterFields();
+	    },
+	    deleteRepeatable(field, idx) {
+	    	console.log("deleteRepeatable", idx, field.values)
+	    	field.values.splice(idx, 1);
+	    	let values = field.values;
+	    	field.values = [];
+	    	this.update();
+	    	field.values = values;
+	    	this.update();
+	    	console.log(field.values)
+	    	if(field.values.length == 0) {
+	    		this.emptyField(field);
+	    	}
 	    },
 	    filter(e) {
 	        this.state.search = e.target.value.toLowerCase();
