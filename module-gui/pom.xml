@@ -2,10 +2,10 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>io.goobi.workflow.plugin</groupId>
-    <artifactId>plugin-workflow-linkedprocesscreation</artifactId>
+    <artifactId>plugin-workflow-linked-process-creation</artifactId>
     <version>24.03-SNAPSHOT</version>
   </parent>
-  <artifactId>plugin-workflow-linkedprocesscreation-gui</artifactId>
+  <artifactId>plugin-workflow-linked-process-creation-gui</artifactId>
   <packaging>jar</packaging>
   <build>
     <resources>
