@@ -1,33 +1,33 @@
 <fieldvalue>
     <span class="text-danger error" if={state.vocabError}>{state.vocabError}</template>
     <template if={!state.vocabError && fieldPrepared()}>
-    	<input 
-            type="text" 
-            class="form-control" 
+    	<input
+            type="text"
+            class="form-control"
             each={(value, idx) in props.field.values}
-            onkeyup={e => changeValue(e, idx)} 
-            if={props.field.type == 'INPUT'} 
+            onkeyup={e => changeValue(e, idx)}
+            if={props.field.type == 'INPUT'}
             value={props.field.values[idx].value}></input>
     	<textarea id="{convertToSlug(props.field.name) + '_textarea'}" class="form-control" onkeyup={changeValue} if={props.field.type == 'TEXTAREA'} >{props.field.values[0].value}</textarea>
     	<input type="checkbox" onchange={changeValue} checked={checkBoxChecked(props.field.values)} if={props.field.type == 'BOOLEAN'}></input>
     	<label class="select" if={props.field.type == 'DROPDOWN'}>
-    		<select class="form-control" onchange={changeValue}>
-    			<option 
-                    each={record in state.vocab.records} 
-                    value="{record.fields[state.vocabFieldIdx].value}" 
+    		<select class="form-select" onchange={changeValue}>
+    			<option
+                    each={record in state.vocab.records}
+                    value="{record.fields[state.vocabFieldIdx].value}"
                     selected={record.fields[state.vocabFieldIdx].value == props.field.values[0].value}>
                     {record.fields[state.vocabFieldIdx].value}
                 </option>
     		</select>
     	</label>
     	<div class="multiselect" if={props.field.type == 'MULTISELECT'} onclick={toggleExpandMulti}>
-    		<span class="form-control">
+    		<span class="form-select">
     			<span class="multiselect-label">
     				{props.field.name} - auswählen
     			</span>
     			<span class="multiselect-icon">
-    				<i class="fa fa-caret-down" if={!state.multiExpanded}></i>
-    				<i class="fa fa-caret-up" if={state.multiExpanded}></i>
+    				<span class="fa fa-caret-down" if={!state.multiExpanded} />
+    				<span class="fa fa-caret-up" if={state.multiExpanded} />
     			</span>
     		</span>
     		<div class="multiselect-options" if={state.multiExpanded}>
@@ -44,7 +44,7 @@
     	</div>
         <input type="text" class="form-control" if={props.field.type == 'UUID'} value={props.field.values[0].value} disabled={true}></input>
 	</template>
-	
+
 	<style>
 		.multiselect {
 			cursor: pointer;
@@ -63,7 +63,7 @@
 			right: 0px;
 			border: 1px solid #ccc;
 			background-color: #fff;
-			z-index: 1; 
+			z-index: 1;
 		}
 		.multiselect .multiselect-options ul {
 			padding-left: 0px;
@@ -84,7 +84,7 @@
 		.multiselect .multiselect-values {
 			margin-top: 10px;
 		}
-		
+
 		.multiselect .multiselect-values .badge {
 			margin-right: 5px;
 		}
@@ -96,14 +96,6 @@
 			-webkit-appearance: none;
 			-moz-appearance: none;
 			appearance: none;       /* Remove default arrow */
-		}
-		.select:after {
-			font-family: FontAwesome;
-			content:"\f0d7";
-			padding: 0px 12px;
-		    position: absolute; right: 0; top: 0;
-		    color: #000;
-	     z-index: 1;
 		}
         .error {
             padding: 2px;
@@ -189,7 +181,7 @@
 		    },
 		    fieldPrepared() {
 		    	var field = this.props.field;
-		    	return field.values.length > 0 || field.type == "MULTISELECT"; 
+		    	return field.values.length > 0 || field.type == "MULTISELECT";
 		    },
 		    closeMulti(e) {
 		        if(this.state.multiExpanded) {
@@ -200,7 +192,7 @@
 		    },
 		    toggleExpandMulti(e) {
 		      e.stopPropagation();
-		      this.state.multiExpanded = !this.state.multiExpanded; 
+		      this.state.multiExpanded = !this.state.multiExpanded;
 		      this.update();
 		    },
 		    toggleEntry(e, record) {
@@ -258,8 +250,8 @@
 		            .replace(/[^\w-]+/g,'');
 		    },
 		    checkBoxChecked(values) {
-		    	return values.length != 0 
-		    		&& typeof values[0].value == "string" 
+		    	return values.length != 0
+		    		&& typeof values[0].value == "string"
 		    		&& values[0].value.toLowerCase() == "true"
 		    },
 		    //taken from https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid

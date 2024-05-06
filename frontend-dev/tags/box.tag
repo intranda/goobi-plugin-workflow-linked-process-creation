@@ -1,19 +1,19 @@
 <box>
-	<div class="box box-color orange box-bordered box-small">
-		<div class="box-title">
-			<h3>
+	<div class="box box--action box--no-padding form-box mb-2">
+		<div class="box__title">
+			<h2>
 				{props.box.name}
-			</h3>
+			</h2>
 		</div>
-		<div class="box-content nopadding">
+		<div class="box__content">
 			<div class="box-content-top" if={ state.filteredFields.length > 0}>
 				<div class="inner-addon right-addon" if={props.box.fields.filter( field => !field.show ).length > 7}>
-					<i class="fa fa-search"></i>
+					<span class="fa fa-search" />
 					<input type="text" class="form-control" onkeyup={filter} placeholder="Filter">
 					</input>
 				</div>
 				<a class="badge badge-intranda-light" each={field in state.filteredFields} onclick={ () => showField(field)}>
-					<i class="fa fa-plus-circle"></i>
+					<span class="fa fa-plus-circle" />
 					{field.name}
 				</a>
 			</div>
@@ -24,15 +24,15 @@
 					</div>
 					<div class="action">
 						<a onclick={ () => emptyField(field)} if={!field.repeatable}>
-							<i class="fa fa-minus-circle"></i>
+							<span class="fa fa-minus-circle" />
 						</a>
-                        <a 
-                            class="repeatable-delete" 
+                        <a
+                            class="repeatable-delete"
                             if={field.repeatable}
                             each={(value, idx) in field.values}
-                            
+
                             onclick={ () => deleteRepeatable(field, idx)}>
-                            <i class="fa fa-minus-circle"></i>
+                            <span class="fa fa-minus-circle" />
                         </a>
 					</div>
 				</div>
@@ -41,19 +41,19 @@
 				</div>
 			</div>
             <template each={(field, idx) in props.box.fields} if={field.show && field.type == "MODAL_PROVENANCE"}>
-                <Provenanceentry 
-                    each={value in field.values} 
-                    field={field} 
-                    value={value.groupValue} 
+                <Provenanceentry
+                    each={value in field.values}
+                    field={field}
+                    value={value.groupValue}
                     msg={props.msg}
                     deleteValue={getDeleteValueFromFieldFunction(field, idx)} />
             </template>
 		</div>
 	</div>
-    <Provenancemodal 
-        if={state.showProvenanceModal} 
+    <Provenancemodal
+        if={state.showProvenanceModal}
         hide={hideProvenanceModal}
-        field={state.provenanceField} 
+        field={state.provenanceField}
         vocabularies={props.vocabularies}
         msg={props.msg}
         valuesChanged={valuesChanged} />
@@ -118,7 +118,7 @@
 		    padding: 5px 10px 5px 5px;
 		    pointer-events: none;
 		}
-		.right-addon .fa { 
+		.right-addon .fa {
 			right: 0px;
 		}
         .action .repeatable-delete:not(:first-child) {
@@ -213,6 +213,6 @@
 	    	}
 	    }
 	}
-		
+
 	</script>
 </box>

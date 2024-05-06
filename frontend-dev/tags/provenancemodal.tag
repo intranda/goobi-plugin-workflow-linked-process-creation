@@ -1,19 +1,19 @@
 <provenancemodal>
 <div class="my-modal-bg" onclick={props.hide}>
-	<div class="box box-color box-bordered" onclick={ e => e.stopPropagation()}>
-		<div class="box-title">
-			<span>{props.field.name}</span>
-			<button class="icon-only-button pull-right" onclick={props.hide}><i class="fa fa-times"></i></button>
+	<div class="box box--primary box--padded" onclick={ e => e.stopPropagation()}>
+		<div class="box__title">
+			<h2>{props.field.name}</h2>
+			<button class="ms-auto" onclick={props.hide}><i class="fa fa-times"></i></button>
 		</div>
-        <div class="box-content">
+        <div class="box__content">
             <template each={group in props.field.groupMappings}>
                 <div class="form-group">
                   <label for="searchPerson">{group.sourceVocabulary} durchsuchen</label>
-                  <input 
-                    type="input" 
-                    class="form-control" 
-                    id="searchPerson" 
-                    placeholder="{group.sourceVocabulary} durchsuchen" 
+                  <input
+                    type="input"
+                    class="form-control"
+                    id="searchPerson"
+                    placeholder="{group.sourceVocabulary} durchsuchen"
                     onkeyup={(e) => filterVocabulary(group.sourceVocabulary, e)}>
                 </div>
                 <table class="table" if={state.filteredVocabs[group.sourceVocabulary] && state.filteredVocabs[group.sourceVocabulary].length != 0}>
@@ -122,7 +122,7 @@ export default {
 				for(let mapping of group.mappings) {
 					let field = value.fields.find(field => field.label == mapping.vocabularyName);
 					if(field) {
-						complexValue[mapping.vocabularyName] = field.value; 
+						complexValue[mapping.vocabularyName] = field.value;
 					}
 				}
 				groupValue.values = complexValue;

@@ -1,9 +1,11 @@
 <imagemodal>
 	<div class="my-modal-bg" onclick={props.hide}>
 		<div class="box box-color box-bordered" onclick={ e => e.stopPropagation()}>
-			<div class="box-title">
+			<div class="box__title">
 				<span>Bildanzeige</span>
-				<button class="icon-only-button pull-right" onclick={props.hide}><i class="fa fa-times"></i></button>
+				<button class="icon-only-button pull-right" onclick={props.hide}>
+					<span class="fa fa-times" />
+				</button>
 			</div>
 			<div class="box-content">
 				<div class="image-container">
@@ -11,25 +13,25 @@
 				</div>
 				<div class="paginator">
 					<button class="btn" onclick={firstPage}>
-						<i class="fa fa-angle-double-left"></i>
+						<span class="fa fa-angle-double-left" />
 					</button>
 					<button class="btn btn-primary" onclick={prevPage}>
-						<i class="fa fa-angle-left" aria-hidden="true"></i>
+						<span class="fa fa-angle-left" aria-hidden="true" />
 						<span>{msg('previousImage')}</span>
 					</button>
 					<span class="current-page">{msg('seite')} {state.currentPageNumber + 1} {msg('von')} {props.images.length}</span>
 					<button class="btn btn-primary" onclick={nextPage}>
 						<span>{msg('nextImage')}</span>
-						<i class="fa fa-angle-right" aria-hidden="true"></i>
+						<span class="fa fa-angle-right" aria-hidden="true" />
 					</button>
 					<button class="btn" onclick={lastPage}>
-						<i class="fa fa-angle-double-right"></i>
+						<span class="fa fa-angle-double-right" />
 					</button>
 				</div>
 			</div>
 		</div>
-	</div>	
-	
+	</div>
+
 	<style>
 		.my-modal-bg {
 			display: flex;
@@ -83,7 +85,7 @@
             margin-left: 5px;
         }
 	</style>
-	
+
 	<script>
 		export default {
 			onBeforeMount(state, props) {
@@ -111,11 +113,11 @@
 			},
 			prevPage() {
 				this.state.currentPageNumber = Math.max(0, this.state.currentPageNumber-1)
-				this.setImageSource();	
+				this.setImageSource();
 			},
 			nextPage() {
 				this.state.currentPageNumber = Math.min(this.props.images.length-1, this.state.currentPageNumber+1)
-				this.setImageSource();				
+				this.setImageSource();
 			},
 			lastPage() {
 				this.state.currentPageNumber = this.props.images.length-1;
