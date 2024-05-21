@@ -3,22 +3,20 @@
         Provenienz: {props.value.type}
         <div class="action">
             <a onclick={deleteProvenance}>
-              <i class="fa fa-minus-circle"></i>
+              <span class="fa fa-minus-circle" />
             </a>
         </div>
-        
+
     </div>
-    <div class="field-detail" each={key in Object.keys(props.value.values)} if={key != 'type'}>
-        <div class="field-label">
-            <div class="label-text">
-                {key}
-            </div>
+    <div class="row" each={key in Object.keys(props.value.values)} if={key != 'type'}>
+        <div class="col-12 col-md-3">
+            {key}
         </div>
-        <div class="value">
+        <div class="col-12 col-md-9">
             <input class="form-control" disabled value={props.value.values[key]}></input>
         </div>
     </div>
-    
+
     <style>
         .form-control[disabled] {
             background-color: #fafafa
@@ -41,13 +39,13 @@
             cursor: pointer;
             position: absolute;
             top: -2px;
-            left: 8px; 
+            left: 8px;
         }
         .action a:hover {
             color: #9E9E9E;
         }
     </style>
-    
+
     <script>
     	export default {
     		onBeforeMount() {
