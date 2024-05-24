@@ -1,11 +1,13 @@
 <preview>
 	<div class="my-modal-bg" onclick={props.hide}>
-		<div class="box box-color box-bordered" onclick={ e => e.stopPropagation()}>
-			<div class="box-title">
-				<span>Vorschauansicht</span>
-				<button class="icon-only-button pull-right" onclick={props.hide}><i class="fa fa-times"></i></button>
+		<div class="box box--primary box--padded" onclick={ e => e.stopPropagation()}>
+			<div class="box__title">
+				<h2>Vorschauansicht</h2>
+				<button class="ms-auto" onclick={props.hide}>
+					<span class="fa fa-times" />
+				</button>
 			</div>
-			<div class="box-content">
+			<div class="box__content">
 				<table class="table">
 				<tbody>
 					<tr each={ item in state.values}>

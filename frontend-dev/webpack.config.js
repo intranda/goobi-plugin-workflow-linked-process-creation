@@ -1,5 +1,4 @@
 const path = require("path")
-const FileManagerPlugin = require('filemanager-webpack-plugin');
 const webpack = require("webpack")
 
 module.exports = {
@@ -7,21 +6,9 @@ module.exports = {
     entry: './main.js',
     mode: "development",
     output: {
-        path: path.resolve(__dirname, '../src/main/resources/frontend/js/'),
+        path: path.resolve(__dirname, '../module-gui/src/main/webapp/resources/js/'),
         filename: 'app.js'
     },
-    plugins: [
-      new FileManagerPlugin({
-        onEnd: {
-          copy: [
-            {
-              source: '../src/main/resources/frontend/**', 
-              destination: '/opt/digiverso/goobi/static_assets/plugins/intranda_workflow_linkedprocesscreation/'
-            }
-          ]
-        }
-      })
-    ],
     module: {
       rules: [
         {

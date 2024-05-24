@@ -3,17 +3,17 @@
 		<div class="col-md-6" each={column in state.currentScreen.columns}>
 			<Box each={box in column.boxes} box={box} vocabularies={state.vocabularies} msg={msg}></Box>
 		</div>
-	</div>  
+	</div>
 	<div class="row" style="margin-top: 15px; margin-bottom: 20px;">
         <div class="col-md-12">
             <hr></hr>
         </div>
 		<div class="col-md-3">
             <div class="form-horizontal">
-                <div class="form-group">
+                <div class="row">
                     <label class="col-sm-4 control-label" for="templateSelect">Vorlage auswählen:</label>
                     <div class="col-sm-8">
-                        <select class="form-control" onchange={changeCurrentScreen} id="templateSelect">
+                        <select class="form-select" onchange={changeCurrentScreen} id="templateSelect">
                             <option each={s in state.screens}>{s.name}</option>
                         </select>
                     </div>
@@ -21,13 +21,14 @@
             </div>
 		</div>
 		<div class="col-md-9">
-			<div class="pull-right">
-				<button class="btn" onclick={save}>{msg('cancel')}</button>
-				<button class="btn btn-success" style="margin-left: 15px;" onclick={saveAndExit}><i class="fa-btn fa fa-floppy-o"></i>{msg('create_process')}</button>
-			</div>
+			<button class="btn" onclick={save}>{msg('cancel')}</button>
+			<button class="btn btn-success" style="margin-left: 15px;" onclick={saveAndExit}>
+				<span class="fa fa-floppy-o" />
+				<span>{msg('create_process')}</span>
+			</button>
 		</div>
 	</div>
-	
+
 	<style>
 	 .btn .fa-btn {
 	 	margin-right: 5px;
@@ -36,7 +37,7 @@
         display: inline;
      }
 	</style>
-  
+
   <script>
   import Box from './box.tag';
   import Preview from './preview.tag';

@@ -6,7 +6,7 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:x="http://myfaces.apache.org/tomahawk"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites"
+    xmlns:intranda="http://xmlns.jcp.org/jsf/composite/compositesPG"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:p="http://primefaces.org/ui"
 >
@@ -15,46 +15,29 @@
     <composite:implementation>
         <main>
             <h:panelGroup rendered="#{!LoginForm.hasRole('Plugin_workflow_linkedprocesscreation')}">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="box box-color box-bordered lightgrey">
-                            <div class="box-title">
-                                <h3>
-                                    <i class="fa fa-plug"></i>
-                                    <h:outputText value="#{msgs[NavigationForm.workflowPlugin.title]}" />
-                                </h3>
-                            </div>
-                            <div class="box-content">
-                                <h:outputText
-                                    styleClass="alert alert-danger alert-dismissable margin-bottom-10 margin-top-10"
-                                    value="#{msgs.plugin_administration_missingPermission} Plugin_workflow_linkedprocesscreation"
-                                />
-                            </div>
-                        </div>
-                    </div>
+                <div class="color-box bg-hot text-white d-flex flex-row p-3">
+                    <h:outputText
+                        value="#{msgs.plugin_administration_missingPermission} Plugin_workflow_linkedprocesscreation" />
                 </div>
             </h:panelGroup>
             <ui:fragment
                 id="actionform"
                 styleClass="col-sm-12"
-                rendered="#{LoginForm.hasRole('Plugin_workflow_linkedprocesscreation')}"
-            >
+                rendered="#{LoginForm.hasRole('Plugin_workflow_linkedprocesscreation')}">
                 <h:form prependId="false">
                     <h:commandLink
                         id="restPluginFinishLink"
                         action="#{AktuelleSchritteForm.myPlugin.finish}"
-                        style="display:none;"
-                    ></h:commandLink>
+                        style="display:none;"></h:commandLink>
                     <h:commandLink
                         id="restPluginCloseStepLink"
                         action="#{AktuelleSchritteForm.SchrittDurchBenutzerAbschliessen}"
-                        style="display:none;"
-                    ></h:commandLink>
+                        style="display:none;"></h:commandLink>
                 </h:form>
                 <app id="root"></app>
                 <script>
-                    var pluginTitle = "#{NavigationForm.workflowPlugin.title}";
-                    var options = {
+                    let pluginTitle = "#{NavigationForm.workflowPlugin.title}";
+                    let options = {
                             userId: #{LoginForm.myBenutzer.id},
                             language: "#{SpracheForm.locale.language}"
                     };
