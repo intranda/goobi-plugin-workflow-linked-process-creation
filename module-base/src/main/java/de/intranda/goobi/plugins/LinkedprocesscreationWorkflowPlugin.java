@@ -1,6 +1,7 @@
 package de.intranda.goobi.plugins;
 
 import org.goobi.production.enums.PluginType;
+import org.goobi.production.plugin.interfaces.IGuiPlugin;
 import org.goobi.production.plugin.interfaces.IPlugin;
 import org.goobi.production.plugin.interfaces.IRestPlugin;
 import org.goobi.production.plugin.interfaces.IWorkflowPlugin;
@@ -14,7 +15,7 @@ import spark.Service;
 
 @PluginImplementation
 @Log4j2
-public class LinkedprocesscreationWorkflowPlugin implements IWorkflowPlugin, IPlugin, IRestPlugin {
+public class LinkedprocesscreationWorkflowPlugin implements IWorkflowPlugin, IGuiPlugin, IPlugin, IRestPlugin {
 
     public static String title = "intranda_workflow_linkedprocesscreation";
 
@@ -41,7 +42,7 @@ public class LinkedprocesscreationWorkflowPlugin implements IWorkflowPlugin, IPl
 
     @Override
     public String[] getJsPaths() {
-        return new String[] { "js/app.js" };
+        return new String[] { "app.js" };
     }
 
     @Override
