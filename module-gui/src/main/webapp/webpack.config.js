@@ -2,11 +2,10 @@ const path = require("path")
 const webpack = require("webpack")
 
 module.exports = {
-    watch: true,
     entry: './main.js',
     mode: "development",
     output: {
-        path: path.resolve(__dirname, '../module-gui/src/main/webapp/resources/js/'),
+        path: path.resolve(__dirname, 'resources/dist/intranda_workflow_linkedprocesscreation/js/'),
         filename: 'app.js'
     },
     module: {

@@ -45,12 +45,12 @@
                     window[pluginTitle] = options;
                 </script>
                 <c:forEach
-                    items="#{NavigationForm.workflowPlugin.jsPaths}"
-                    var="jsPath"
+                        items="#{AktuelleSchritteForm.workflowPlugin.getJsPaths()}"
+                        var="jsPath"
                 >
                     <script
-                        src="/goobi/plugins/#{NavigationForm.workflowPlugin.title}/#{jsPath}"
-                        type="text/javascript"
+                            src="#{HelperForm.applicationWebsiteUrl}dist/#{AktuelleSchritteForm.myPlugin.title}/js/#{jsPath}"
+                            type="text/javascript"
                     ></script>
                 </c:forEach>
             </ui:fragment>
