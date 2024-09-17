@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
 import org.goobi.beans.Process;
-import org.goobi.vocabulary.Vocabulary;
 
 import com.google.gson.Gson;
 
@@ -24,12 +23,15 @@ import de.intranda.goobi.plugins.processcreation.model.GroupMapping;
 import de.intranda.goobi.plugins.processcreation.model.ProcessCreationScreen;
 import de.intranda.goobi.plugins.processcreation.model.ProcessIdentifier;
 import de.intranda.goobi.plugins.processcreation.model.ProcessRelation;
+import de.intranda.goobi.plugins.processcreation.model.json.vocabulary.JsonVocabulary;
+import de.intranda.goobi.plugins.processcreation.model.json.vocabulary.VocabularyBuilder;
 import de.sub.goobi.config.ConfigPlugins;
 import de.sub.goobi.helper.BeanHelper;
 import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.SwapException;
 import de.sub.goobi.persistence.managers.ProcessManager;
-import de.sub.goobi.persistence.managers.VocabularyManager;
+import io.goobi.workflow.api.vocabulary.VocabularyAPIManager;
+import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabulary;
 import lombok.extern.log4j.Log4j2;
 import spark.Route;
 import ugh.dl.DigitalDocument;
@@ -47,27 +49,29 @@ import ugh.fileformats.mets.MetsMods;
 
 @Log4j2
 public class Handlers {
+
+    private static final VocabularyAPIManager vocabularyAPI = VocabularyAPIManager.getInstance();
+    private static final VocabularyBuilder vocabularyBuilder = new VocabularyBuilder(vocabularyAPI);
+
     private static Gson gson = new Gson();
     public static Route allVocabs = (req, res) -> {
         XMLConfiguration conf = ConfigPlugins.getPluginConfig(LinkedprocesscreationWorkflowPlugin.title);
         List<Column> colList = readColsFromConfig(conf);
-        Map<String, Vocabulary> vocabMap = new TreeMap<>();
+        Map<String, JsonVocabulary> vocabMap = new TreeMap<>();
         for (Column col : colList) {
             for (Box box : col.getBoxes()) {
                 for (Field field : box.getFields()) {
                     for (String vocabName : field.getSourceVocabularies()) {
                         if (vocabName != null && !vocabMap.containsKey(vocabName)) {
-                            Vocabulary vocab = VocabularyManager.getVocabularyByTitle(vocabName);
-                            VocabularyManager.getAllRecords(vocab);
-                            vocabMap.put(vocabName, vocab);
+                            ExtendedVocabulary vocab = vocabularyAPI.vocabularies().findByName(vocabName);
+                            vocabMap.put(vocabName, vocabularyBuilder.buildVocabulary(vocab));
                         }
                     }
                     for (GroupMapping gm : field.getGroupMappings()) {
                         String vocabName = gm.getSourceVocabulary();
                         if (vocabName != null && !vocabMap.containsKey(vocabName)) {
-                            Vocabulary vocab = VocabularyManager.getVocabularyByTitle(vocabName);
-                            VocabularyManager.getAllRecords(vocab);
-                            vocabMap.put(vocabName, vocab);
+                            ExtendedVocabulary vocab = vocabularyAPI.vocabularies().findByName(vocabName);
+                            vocabMap.put(vocabName, vocabularyBuilder.buildVocabulary(vocab));
                         }
                     }
                 }
