@@ -10,6 +10,7 @@
   <artifactId>plugin-workflow-linked-process-creation</artifactId>
   <packaging>pom</packaging>
   <modules>
+    <module>module-api</module>
     <module>module-base</module>
     <module>module-gui</module>
   </modules>

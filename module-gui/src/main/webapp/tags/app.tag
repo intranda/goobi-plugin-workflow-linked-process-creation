@@ -42,6 +42,8 @@
   import Box from './box.tag';
   import Preview from './preview.tag';
   import Imagemodal from './imagemodal.tag';
+
+  const goobi_path = location.pathname.split('/')[1];
   export default {
     components: {
       Box,
@@ -57,7 +59,7 @@
           screens: [],
           pluginName: props.plugin_name
       };
-      fetch(`/goobi/plugins/processcreation/allCreationScreens`).then(resp => {
+      fetch(`/${goobi_path}/api/plugins/processcreation/allCreationScreens`).then(resp => {
   		resp.json().then(json => {
   			this.state.screens = json;
   			console.log(this.state.screens)
@@ -65,14 +67,14 @@
 			this.update();
   		});
       });
-      fetch(`/goobi/plugins/processcreation/vocabularies`).then(resp => {
+      fetch(`/${goobi_path}/api/plugins/processcreation/vocabularies`).then(resp => {
 		resp.json().then(json => {
 			this.state.vocabularies = json;
 			console.log(this.state.vocabularies)
 			this.update();
 		});
       });
-      fetch(`/goobi/api/messages/${props.goobi_opts.language}`, {
+      fetch(`/${goobi_path}/api/api/messages/${props.goobi_opts.language}`, {
           method: 'GET',
           credentials: 'same-origin'
       }).then(resp => {
@@ -106,12 +108,12 @@
     	this.update();
     },
     saveAndExit() {
-    	fetch(`/goobi/plugins/processcreation/processes`, {
+    	fetch(`/${goobi_path}/api/plugins/processcreation/processes`, {
     		method: "POST",
     		body: JSON.stringify(this.state.currentScreen)
     	}).then( r => {
   			alert("Prozesse erzeugt!")
-    		fetch(`/goobi/plugins/processcreation/allCreationScreens`).then(resp => {
+    		fetch(`/${goobi_path}/api/plugins/processcreation/allCreationScreens`).then(resp => {
     	  		resp.json().then(json => {
     	  			this.state.screens = json;
     	  			console.log(this.state.screens)

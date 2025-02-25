@@ -87,6 +87,7 @@
 	</style>
 
 	<script>
+		const goobi_path = location.pathname.split('/')[1];
 		export default {
 			onBeforeMount(state, props) {
 				this.listenerFunction = this.keyListener.bind(this);
@@ -127,7 +128,7 @@
 				var imageName = this.props.images[this.state.currentPageNumber];
 				var height = Math.floor(window.innerHeight*0.6);
 				var width = Math.floor(window.innerWidth*0.5);
-				this.state.imageSource = `/goobi/api/process/image/${this.props.processId}/${this.props.imageFolder}/${imageName}/full/!${height},${width}/0/default.jpg`;
+				this.state.imageSource = `/${goobi_path}/api/process/image/${this.props.processId}/${this.props.imageFolder}/${imageName}/full/!${height},${width}/0/default.jpg`;
 				this.update();
 			}
 		}
