@@ -1,140 +1,128 @@
-package de.intranda.goobi.plugins.processcreation;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
-
-import org.apache.commons.configuration.XMLConfiguration;
-import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
-import org.goobi.beans.Process;
+package org.goobi.api.rest;
 
 import com.google.gson.Gson;
-
-import de.intranda.goobi.plugins.LinkedprocesscreationWorkflowPlugin;
-import de.intranda.goobi.plugins.processcreation.model.Box;
-import de.intranda.goobi.plugins.processcreation.model.Column;
-import de.intranda.goobi.plugins.processcreation.model.Field;
-import de.intranda.goobi.plugins.processcreation.model.FieldValue;
-import de.intranda.goobi.plugins.processcreation.model.GroupMapping;
-import de.intranda.goobi.plugins.processcreation.model.ProcessCreationScreen;
-import de.intranda.goobi.plugins.processcreation.model.ProcessIdentifier;
-import de.intranda.goobi.plugins.processcreation.model.ProcessRelation;
+import de.intranda.goobi.plugins.processcreation.model.*;
 import de.intranda.goobi.plugins.processcreation.model.json.vocabulary.JsonVocabulary;
 import de.intranda.goobi.plugins.processcreation.model.json.vocabulary.VocabularyBuilder;
 import de.sub.goobi.config.ConfigPlugins;
 import de.sub.goobi.helper.BeanHelper;
+import de.sub.goobi.helper.Helper;
 import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.SwapException;
 import de.sub.goobi.persistence.managers.ProcessManager;
+import io.goobi.workflow.api.vocabulary.APIException;
 import io.goobi.workflow.api.vocabulary.VocabularyAPIManager;
 import io.goobi.workflow.api.vocabulary.helper.ExtendedVocabulary;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Response;
 import lombok.extern.log4j.Log4j2;
-import spark.Route;
-import ugh.dl.DigitalDocument;
-import ugh.dl.DocStruct;
-import ugh.dl.Fileformat;
-import ugh.dl.Metadata;
-import ugh.dl.MetadataType;
-import ugh.dl.Prefs;
-import ugh.exceptions.MetadataTypeNotAllowedException;
-import ugh.exceptions.PreferencesException;
-import ugh.exceptions.ReadException;
-import ugh.exceptions.TypeNotAllowedForParentException;
-import ugh.exceptions.WriteException;
+import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.configuration.tree.xpath.XPathExpressionEngine;
+import org.goobi.beans.Process;
+import ugh.dl.*;
+import ugh.exceptions.*;
 import ugh.fileformats.mets.MetsMods;
 
-@Log4j2
-public class Handlers {
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
 
+@Log4j2
+@Path("/plugins/processcreation")
+public class LinkedprocesscreationWorkflowPluginApi {
+    public static String title = "intranda_workflow_linkedprocesscreation";
     private static final VocabularyAPIManager vocabularyAPI = VocabularyAPIManager.getInstance();
     private static final VocabularyBuilder vocabularyBuilder = new VocabularyBuilder(vocabularyAPI);
-
     private static Gson gson = new Gson();
-    public static Route allVocabs = (req, res) -> {
-        XMLConfiguration conf = ConfigPlugins.getPluginConfig(LinkedprocesscreationWorkflowPlugin.title);
+
+    @GET
+    @Path("/vocabularies")
+    public Map<String, JsonVocabulary> allVocabs() {
+        XMLConfiguration conf = ConfigPlugins.getPluginConfig(title);
         List<Column> colList = readColsFromConfig(conf);
         Map<String, JsonVocabulary> vocabMap = new TreeMap<>();
-        for (Column col : colList) {
-            for (Box box : col.getBoxes()) {
-                for (Field field : box.getFields()) {
-                    for (String vocabName : field.getSourceVocabularies()) {
-                        if (vocabName != null && !vocabMap.containsKey(vocabName)) {
-                            ExtendedVocabulary vocab = vocabularyAPI.vocabularies().findByName(vocabName);
-                            vocabMap.put(vocabName, vocabularyBuilder.buildVocabulary(vocab));
-                        }
+        Set<String> vocabularyNames = new HashSet<>();
+        colList.stream()
+                .flatMap(col -> col.getBoxes().stream())
+                .flatMap(box -> box.getFields().stream())
+                .forEach(field -> {
+                    vocabularyNames.addAll(field.getSourceVocabularies());
+                    vocabularyNames.addAll(field.getGroupMappings().stream().map(GroupMapping::getSourceVocabulary).toList());
+                });
+        vocabularyNames.stream()
+                .filter(Objects::nonNull)
+                .forEach(vocabName -> {
+                    try {
+                        ExtendedVocabulary vocab = vocabularyAPI.vocabularies().findByName(vocabName);
+                        vocabMap.put(vocabName, vocabularyBuilder.buildVocabulary(vocab));
+                    } catch (APIException e) {
+                        String message = "Unable to retrieve vocabulary \"" + vocabName + "\"";
+                        Helper.setFehlerMeldung(message);
+                        log.error(message);
                     }
-                    for (GroupMapping gm : field.getGroupMappings()) {
-                        String vocabName = gm.getSourceVocabulary();
-                        if (vocabName != null && !vocabMap.containsKey(vocabName)) {
-                            ExtendedVocabulary vocab = vocabularyAPI.vocabularies().findByName(vocabName);
-                            vocabMap.put(vocabName, vocabularyBuilder.buildVocabulary(vocab));
-                        }
-                    }
-                }
-            }
-        }
+                });
         return vocabMap;
-    };
+    }
 
-    public static Route allCreationScreens = (req, res) -> {
-        XMLConfiguration conf = ConfigPlugins.getPluginConfig(LinkedprocesscreationWorkflowPlugin.title);
+    @GET
+    @Path("/allCreationScreens")
+    public List<ProcessCreationScreen> allCreationScreens() {
+        XMLConfiguration conf = ConfigPlugins.getPluginConfig(title);
         conf.setExpressionEngine(new XPathExpressionEngine());
-        List<ProcessCreationScreen> screens = conf.configurationsAt("//type")
+        return conf.configurationsAt("//type")
                 .stream()
-                .map(node -> ProcessCreationScreen.fromConfig(node))
+                .map(ProcessCreationScreen::fromConfig)
                 .collect(Collectors.toList());
-        return screens;
-    };
+    }
 
-    public static Route createProcesses = (req, res) -> {
-        ProcessCreationScreen screen = gson.fromJson(req.body(), ProcessCreationScreen.class);
-        Map<String, Process> createdProcesses = new HashMap<>();
+    //            http.post("/processes", Handlers.createProcesses, gson::toJson);
+    @POST
+    @Path("/processes")
+    public Response createProcesses(String body) throws DAOException, ReadException, WriteException, SwapException, MetadataTypeNotAllowedException, IOException, PreferencesException {
+        ProcessCreationScreen screen = gson.fromJson(body, ProcessCreationScreen.class);
+        Map<String, org.goobi.beans.Process> createdProcesses = new HashMap<>();
         for (ProcessIdentifier processId : screen.getProcesses()) {
             try {
                 createdProcesses.put(processId.getId(), createProcess(processId, screen.getColumns()));
             } catch (Exception e) {
                 log.error(e);
-                res.body(e.getMessage());
-                res.status(500);
+                return Response.serverError().entity(e.getMessage()).build();
             }
         }
         for (ProcessRelation relation : screen.getRelations()) {
             connectProcesses(createdProcesses, relation);
         }
-        return "";
-    };
+        return Response.ok().build();
+    }
 
     private static List<Column> readColsFromConfig(XMLConfiguration conf) {
         conf.setExpressionEngine(new XPathExpressionEngine());
-        List<Column> colList = conf.configurationsAt("//column")
-                .stream()
-                .map(node -> Column.fromConfig(node))
-                .collect(Collectors.toList());
 
-        return colList;
+        return conf.configurationsAt("//column")
+                .stream()
+                .map(Column::fromConfig)
+                .collect(Collectors.toList());
     }
 
-    private static void connectProcesses(Map<String, Process> createdProcesses, ProcessRelation relation) throws PreferencesException, ReadException,
-            WriteException, IOException, InterruptedException, SwapException, DAOException, MetadataTypeNotAllowedException {
-        Process sourceProcess = createdProcesses.get(relation.getSourceProcessID());
+    private static void connectProcesses(Map<String, org.goobi.beans.Process> createdProcesses, ProcessRelation relation) throws PreferencesException, ReadException,
+            WriteException, IOException, SwapException, MetadataTypeNotAllowedException {
+        org.goobi.beans.Process sourceProcess = createdProcesses.get(relation.getSourceProcessID());
         DocStruct sourceDocStruct = readDocStruct(sourceProcess);
         Optional<Metadata> sourceMd = sourceDocStruct.getAllMetadata()
                 .stream()
                 .filter(md -> md.getType().getName().equals(relation.getSourceMetadataType()))
                 .findAny();
-        if (!sourceMd.isPresent()) {
+        if (sourceMd.isEmpty()) {
             throw new MetadataTypeNotAllowedException("Could not find source metadata");
         }
-        Process targetProcess = createdProcesses.get(relation.getTargetProcessID());
+        org.goobi.beans.Process targetProcess = createdProcesses.get(relation.getTargetProcessID());
         writeMetadataToTarget(relation, sourceMd, targetProcess);
     }
 
-    private static void writeMetadataToTarget(ProcessRelation relation, Optional<Metadata> sourceMd, Process targetProcess) throws ReadException,
-            IOException, InterruptedException, PreferencesException, SwapException, DAOException, WriteException, MetadataTypeNotAllowedException {
+    private static void writeMetadataToTarget(ProcessRelation relation, Optional<Metadata> sourceMd, org.goobi.beans.Process targetProcess) throws ReadException,
+            IOException, PreferencesException, SwapException, WriteException, MetadataTypeNotAllowedException {
         Fileformat ff = targetProcess.readMetadataFile();
         DigitalDocument dd = ff.getDigitalDocument();
         DocStruct targetDocStruct = dd.getLogicalDocStruct();
@@ -146,18 +134,18 @@ public class Handlers {
         targetProcess.writeMetadataFile(ff);
     }
 
-    private static DocStruct readDocStruct(Process process)
-            throws PreferencesException, ReadException, WriteException, IOException, InterruptedException, SwapException, DAOException {
+    private static DocStruct readDocStruct(org.goobi.beans.Process process)
+            throws PreferencesException, ReadException, IOException, SwapException {
         Fileformat ff = process.readMetadataFile();
         DigitalDocument dd = ff.getDigitalDocument();
         return dd.getLogicalDocStruct();
     }
 
-    private static Process createProcess(ProcessIdentifier processIdentifier, List<Column> columns)
+    private static org.goobi.beans.Process createProcess(ProcessIdentifier processIdentifier, List<Column> columns)
             throws DAOException, PreferencesException, TypeNotAllowedForParentException, MetadataTypeNotAllowedException, WriteException, IOException,
-            InterruptedException, SwapException {
-        Process template = ProcessManager.getProcessByExactTitle(processIdentifier.getTemplateName());
-        Process createdProcess = cloneTemplate(template);
+            SwapException {
+        org.goobi.beans.Process template = ProcessManager.getProcessByExactTitle(processIdentifier.getTemplateName());
+        org.goobi.beans.Process createdProcess = cloneTemplate(template);
         String processTitle = findProcessTitle(processIdentifier, columns);
         createdProcess.setTitel(processTitle);
         Fileformat fileFormat = createMetadataForProcess(createdProcess, processIdentifier, columns);
@@ -171,16 +159,16 @@ public class Handlers {
                 .stream()
                 .flatMap(col -> col.getBoxes().stream())
                 .flatMap(box -> box.getFields().stream())
-                .filter(field -> field.isProcessTitle())
+                .filter(Field::isProcessTitle)
                 .filter(field -> field.getProcessID().equals(processIdentifier.getId()))
                 .flatMap(field -> field.getValues().stream())
-                .map(val -> val.getValue())
+                .map(FieldValue::getValue)
                 .findAny();
 
-        return processTitle.get();
+        return processTitle.orElseThrow();
     }
 
-    private static Fileformat createMetadataForProcess(Process process, ProcessIdentifier processIdentifier, List<Column> columns)
+    private static Fileformat createMetadataForProcess(org.goobi.beans.Process process, ProcessIdentifier processIdentifier, List<Column> columns)
             throws PreferencesException, TypeNotAllowedForParentException, MetadataTypeNotAllowedException {
         Prefs prefs = process.getRegelsatz().getPreferences();
         Fileformat fileformat = new MetsMods(prefs);
@@ -219,8 +207,8 @@ public class Handlers {
         return fileformat;
     }
 
-    private static Process cloneTemplate(Process template) {
-        Process process = new Process();
+    private static org.goobi.beans.Process cloneTemplate(org.goobi.beans.Process template) {
+        org.goobi.beans.Process process = new Process();
 
         process.setIstTemplate(false);
         process.setInAuswahllisteAnzeigen(false);

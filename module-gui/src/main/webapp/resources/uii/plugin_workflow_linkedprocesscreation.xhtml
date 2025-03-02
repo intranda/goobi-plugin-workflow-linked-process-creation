@@ -4,7 +4,6 @@
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:x="http://myfaces.apache.org/tomahawk"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:intranda="http://xmlns.jcp.org/jsf/composite/compositesPG"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
@@ -45,11 +44,11 @@
                     window[pluginTitle] = options;
                 </script>
                 <c:forEach
-                        items="#{AktuelleSchritteForm.workflowPlugin.getJsPaths()}"
+                        items="#{NavigationForm.workflowPlugin.getJsPaths()}"
                         var="jsPath"
                 >
                     <script
-                            src="#{HelperForm.applicationWebsiteUrl}dist/#{AktuelleSchritteForm.myPlugin.title}/js/#{jsPath}"
+                            src="#{HelperForm.applicationWebsiteUrl}dist/#{NavigationForm.workflowPlugin.title}/js/#{jsPath}"
                             type="text/javascript"
                     ></script>
                 </c:forEach>

@@ -1,21 +1,17 @@
 package de.intranda.goobi.plugins;
 
-import org.goobi.production.enums.PluginType;
-import org.goobi.production.plugin.interfaces.IGuiPlugin;
-import org.goobi.production.plugin.interfaces.IPlugin;
-import org.goobi.production.plugin.interfaces.IRestPlugin;
-import org.goobi.production.plugin.interfaces.IWorkflowPlugin;
-
-import de.intranda.goobi.plugins.processcreation.Routes;
 import de.sub.goobi.config.ConfigPlugins;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
-import spark.Service;
+import org.goobi.production.enums.PluginType;
+import org.goobi.production.plugin.interfaces.IGuiPlugin;
+import org.goobi.production.plugin.interfaces.IPlugin;
+import org.goobi.production.plugin.interfaces.IWorkflowPlugin;
 
 @PluginImplementation
 @Log4j2
-public class LinkedprocesscreationWorkflowPlugin implements IWorkflowPlugin, IGuiPlugin, IPlugin, IRestPlugin {
+public class LinkedprocesscreationWorkflowPlugin implements IWorkflowPlugin, IGuiPlugin, IPlugin {
 
     public static String title = "intranda_workflow_linkedprocesscreation";
 
@@ -43,11 +39,6 @@ public class LinkedprocesscreationWorkflowPlugin implements IWorkflowPlugin, IGu
     @Override
     public String[] getJsPaths() {
         return new String[] { "app.js" };
-    }
-
-    @Override
-    public void initRoutes(Service http) {
-        Routes.initRoutes(http);
     }
 
     @Override

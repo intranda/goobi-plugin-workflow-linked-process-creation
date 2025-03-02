@@ -1,31 +1,28 @@
 <app>
-	<div class="row">
-		<div class="col-md-6" each={column in state.currentScreen.columns}>
-			<Box each={box in column.boxes} box={box} vocabularies={state.vocabularies} msg={msg}></Box>
+	<div class="flow">
+		<div class="row">
+			<div class="col-md-6" each={column in state.currentScreen.columns}>
+				<Box each={box in column.boxes} box={box} vocabularies={state.vocabularies} msg={msg}></Box>
+			</div>
 		</div>
-	</div>
-	<div class="row" style="margin-top: 15px; margin-bottom: 20px;">
-        <div class="col-md-12">
-            <hr></hr>
-        </div>
-		<div class="col-md-3">
-            <div class="form-horizontal">
-                <div class="row">
-                    <label class="col-sm-4 control-label" for="templateSelect">Vorlage auswählen:</label>
-                    <div class="col-sm-8">
-                        <select class="form-select" onchange={changeCurrentScreen} id="templateSelect">
-                            <option each={s in state.screens}>{s.name}</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-		</div>
-		<div class="col-md-9">
-			<button class="btn" onclick={save}>{msg('cancel')}</button>
-			<button class="btn btn-success" style="margin-left: 15px;" onclick={saveAndExit}>
-				<span class="fa fa-floppy-o" />
-				<span>{msg('create_process')}</span>
-			</button>
+		<div class="d-flex flex-nowrap justify-content-between">
+			<div class="form-horizontal">
+				<div class="row">
+					<label class="col-sm-4 control-label" for="templateSelect">Vorlage auswählen:</label>
+					<div class="col-sm-8">
+						<select class="form-select" onchange={changeCurrentScreen} id="templateSelect">
+							<option each={s in state.screens}>{s.name}</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<div>
+				<button class="btn btn-blank" onclick={save}>{msg('cancel')}</button>
+				<button class="btn btn-success" style="margin-left: 15px;" onclick={saveAndExit}>
+					<span class="fa fa-floppy-o" />
+					<span>{msg('create_process')}</span>
+				</button>
+			</div>
 		</div>
 	</div>
 
@@ -42,6 +39,8 @@
   import Box from './box.tag';
   import Preview from './preview.tag';
   import Imagemodal from './imagemodal.tag';
+
+  const goobi_path = location.pathname.split('/')[1];
   export default {
     components: {
       Box,
@@ -57,7 +56,7 @@
           screens: [],
           pluginName: props.plugin_name
       };
-      fetch(`/goobi/plugins/processcreation/allCreationScreens`).then(resp => {
+      fetch(`/${goobi_path}/api/plugins/processcreation/allCreationScreens`).then(resp => {
   		resp.json().then(json => {
   			this.state.screens = json;
   			console.log(this.state.screens)
@@ -65,14 +64,14 @@
 			this.update();
   		});
       });
-      fetch(`/goobi/plugins/processcreation/vocabularies`).then(resp => {
+      fetch(`/${goobi_path}/api/plugins/processcreation/vocabularies`).then(resp => {
 		resp.json().then(json => {
 			this.state.vocabularies = json;
 			console.log(this.state.vocabularies)
 			this.update();
 		});
       });
-      fetch(`/goobi/api/messages/${props.goobi_opts.language}`, {
+      fetch(`/${goobi_path}/api/api/messages/${props.goobi_opts.language}`, {
           method: 'GET',
           credentials: 'same-origin'
       }).then(resp => {
@@ -106,12 +105,12 @@
     	this.update();
     },
     saveAndExit() {
-    	fetch(`/goobi/plugins/processcreation/processes`, {
+    	fetch(`/${goobi_path}/api/plugins/processcreation/processes`, {
     		method: "POST",
     		body: JSON.stringify(this.state.currentScreen)
     	}).then( r => {
   			alert("Prozesse erzeugt!")
-    		fetch(`/goobi/plugins/processcreation/allCreationScreens`).then(resp => {
+    		fetch(`/${goobi_path}/api/plugins/processcreation/allCreationScreens`).then(resp => {
     	  		resp.json().then(json => {
     	  			this.state.screens = json;
     	  			console.log(this.state.screens)
