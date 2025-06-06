@@ -218,8 +218,6 @@ public class LinkedprocesscreationWorkflowPluginApi {
 
         BeanHelper bHelper = new BeanHelper();
         bHelper.SchritteKopieren(template, process);
-        bHelper.ScanvorlagenKopieren(template, process);
-        bHelper.WerkstueckeKopieren(template, process);
         bHelper.EigenschaftenKopieren(template, process);
 
         return process;
