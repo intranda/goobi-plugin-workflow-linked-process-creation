@@ -3,6 +3,10 @@ title: Vorgangsbeziehungen anlegen
 identifier: intranda_workflow_linkedprocesscreation
 description: Dieses Workflow Plugin erlaubt es, mehrere in einer Beziehung zueinander stehende Vorgänge in einer einzelnen Anlegemaske zu erzeugen.
 published: true
+keywords:
+    - Goobi workflow
+    - Plugin
+    - Workflow Plugin
 ---
 ## Einführung
 Mit diesem Workflow-Plugin ist es möglich, mehrere in einer Beziehung zueinander stehende Vorgänge in einer einzelnen Anlegemaske zu erzeugen.
