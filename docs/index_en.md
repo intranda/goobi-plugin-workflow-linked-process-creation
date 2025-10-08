@@ -3,6 +3,10 @@ title: Create process relationships
 identifier: intranda_workflow_linkedprocesscreation
 description: This workflow plugin allows you to create several in a relationship with each other to generate standing processes in a single creation mask.
 published: true
+keywords:
+    - Goobi workflow
+    - Plugin
+    - Workflow Plugin
 ---
 ## Introduction
 With this workflow plugin it is possible to create several related processes in a single creation mask.
