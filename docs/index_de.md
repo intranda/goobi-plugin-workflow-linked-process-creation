@@ -135,7 +135,7 @@ Der Inhalt der Konfigurationsdatei sieht wie folgt aus:
                 <field type="UUID" defaultDisplay="true">
                     <metadatatype>uuid</metadatatype>
                     <name>UUID</name>
-                    <!-- Dieses Feld wird als Vorgangstitel für für Prozess 2 benutzt -->
+                    <!-- Dieses Feld wird als Vorgangstitel für Prozess 2 benutzt -->
                     <processTitle>true</processTitle>
                     <processId>2</processId>
                 </field>
